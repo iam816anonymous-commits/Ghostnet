@@ -9,6 +9,8 @@ import (
 
 type Metrics struct {
 	PrivacyScore     float64
+	RiskLevel        float64
+	AIStrategy       string
 	Latency          time.Duration
 	AnonymitySetSize int
 	CoverTraffic     int
@@ -21,6 +23,8 @@ func (m Metrics) Display() {
 	fmt.Println("GHOSTNET PRIVACY DASHBOARD")
 	fmt.Println("==========================================")
 	fmt.Printf("Privacy Score:       %.2f/10.0\n", m.PrivacyScore)
+	fmt.Printf("Risk Level:          %.2f/10.0\n", m.RiskLevel)
+	fmt.Printf("AI Recommendation:   %s\n", m.AIStrategy)
 	fmt.Printf("Latency:             %v\n", m.Latency)
 	fmt.Printf("Anonymity Set:       %d users\n", m.AnonymitySetSize)
 	fmt.Printf("Cover Traffic:       %d pkts\n", m.CoverTraffic)

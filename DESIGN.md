@@ -2,14 +2,21 @@
 
 ## Architecture Overview
 
-GhostNet vNext is a modular privacy network designed to resist traffic analysis through a multi-stage pipeline:
+GhostNet vNext is a modular privacy network designed to resist traffic analysis through a multi-stage pipeline. The architecture is a hybrid of **Rust** for performance-critical packet processing and **Go** for orchestration and control plane.
 
-1.  **Identity Manager**: Ensures per-site isolation of cookies and local storage.
-2.  **Traffic Classifier**: Categorizes traffic to allow for specialized queue management.
-3.  **Mix Queue Manager**: Batches packets, reorders them, and releases them at random intervals.
-4.  **Cover Traffic Engine**: Generates adaptive dummy traffic to obfuscate real communication patterns.
-5.  **Packet Normalizer**: Standardizes packet sizes via padding and fragmentation.
-6.  **Multi-Hop Routing Engine**: Selects random paths through a network of relays.
+### 1. GhostNet Core (Rust)
+The core networking engine is implemented in Rust to ensure memory safety, high performance, and predictable resource usage.
+- **Packet Normalizer**: Standardizes packet sizes (1024 bytes) via padding and fragmentation.
+- **Mix Queue Manager**: Handles batching, shuffling, and random release intervals.
+- **Cover Traffic Engine**: Generates adaptive dummy traffic.
+- **Traffic Classifier**: Categorizes traffic and manages dynamic queues.
+- **Routing Engine**: Selects multi-hop paths (4 hops).
+
+### 2. Control Plane & Orchestration (Go)
+Go is used for high-level management and simulation.
+- **Identity Manager**: Ensures per-site isolation.
+- **Simulation Suite**: Orchestrates thousands of concurrent users.
+- **Privacy Dashboard**: Reports metrics and privacy scores.
 
 ## Component Details & Privacy Benefits
 
@@ -25,7 +32,7 @@ GhostNet vNext is a modular privacy network designed to resist traffic analysis 
 
 ### 3. Adaptive Cover Traffic Engine
 - **Function**: Generates dummy packets during idle periods or low-volume bursts.
-- **Privacy Benefit**: Maintains a constant or semi-constant traffic profile, making it difficult for an observer to detect when real communication is occurring.
+- **Privacy Benefit**: Maintains a constant or semi-constant traffic profile.
 - **Trade-off**: Consumes additional bandwidth and battery.
 
 ### 4. Packet Normalizer
@@ -33,17 +40,12 @@ GhostNet vNext is a modular privacy network designed to resist traffic analysis 
 - **Privacy Benefit**: Eliminates packet-size fingerprinting.
 - **Trade-off**: Adds overhead due to padding and fragmentation headers.
 
-### 5. Multi-Hop Routing Engine
-- **Function**: 4-hop routing (Entry -> Middle -> Middle -> Exit).
-- **Privacy Benefit**: Ensures no single relay knows both the source and the destination.
-- **Trade-off**: Increased latency and higher risk of path failure.
-
 ## Threat Model & Limitations
 
 - **Traffic Correlation**: Resistant to global passive observers through mixing and cover traffic.
 - **Timing Analysis**: Mitigated by Mix Queues.
 - **Packet-Size Analysis**: Neutralized by Packet Normalization.
-- **Limitations**: We do not claim complete anonymity. A powerful adversary controlling both Entry and Exit nodes may still perform correlation, although mixing makes this significantly harder.
+- **Limitations**: We do not claim complete anonymity. Endpoint compromise or controlled entry/exit nodes remain risks.
 
 ## Performance vs. Privacy
 

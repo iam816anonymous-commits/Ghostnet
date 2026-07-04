@@ -19,12 +19,15 @@ go test ./...
 ```
 
 ## Project Structure
-- `pkg/classifier`: Traffic classification logic.
-- `pkg/common`: Shared types and constants.
-- `pkg/cover`: Adaptive dummy traffic generation.
+
+### GhostNet Core (Rust) - `ghostnet-core/`
+- `src/classifier`: Traffic classification and dynamic queue management.
+- `src/cover`: Adaptive dummy traffic generation.
+- `src/normalizer`: Packet padding and fragmentation.
+- `src/queue`: Mix networking, batching, and shuffling.
+- `src/routing`: Multi-hop path selection.
+
+### GhostNet Control Plane (Go) - `pkg/`
 - `pkg/dashboard`: Privacy metrics and visualization.
 - `pkg/identity`: Per-site identity isolation.
-- `pkg/normalizer`: Packet padding and fragmentation.
-- `pkg/pipeline`: The main processing pipeline.
-- `pkg/queue`: Batching and mixing engine.
-- `pkg/routing`: Multi-hop path selection and relay management.
+- `pkg/pipeline`: Orchestration pipeline.

@@ -3,9 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"ghostnet/pkg/ai"
 	"ghostnet/pkg/common"
 	"ghostnet/pkg/dashboard"
+	"ghostnet/pkg/performance"
 	"ghostnet/pkg/pipeline"
+	"ghostnet/pkg/research"
 	"math/rand"
 	"sync"
 	"time"
@@ -24,6 +27,10 @@ func main() {
 	p.CoverEngine.SetMode(mode)
 	p.CoverEngine.SetActiveUsers(*userCount)
 	p.CoverEngine.Start()
+
+	aiEngine := ai.NewEngine("balanced")
+	perfEngine := performance.NewEngine()
+	resMode := &research.Mode{Enabled: true}
 
 	var wg sync.WaitGroup
 	stop := make(chan struct{})
@@ -69,8 +76,13 @@ func main() {
 				return
 			case <-ticker.C:
 				metrics := dashboard.CalculateMetrics(*userCount, p.QueueMgr, mode)
+				metrics.RiskLevel = aiEngine.EstimateRisk(*userCount, mode)
+				metrics.AIStrategy = aiEngine.RecommendStrategy(metrics.RiskLevel)
 				metrics.TotalPackets = int(totalProcessed)
 				metrics.Display()
+
+				perfEngine.OptimizeQueues(len(p.QueueMgr.GetStats().QueueLengths))
+				fmt.Println(resMode.EvaluateStrategy("Adaptive batching v2"))
 			}
 		}
 	}()

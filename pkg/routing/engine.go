@@ -1,8 +1,10 @@
 package routing
 
 import (
+	"crypto/rand"
+	"encoding/binary"
 	"fmt"
-	"math/rand"
+	mrand "math/rand"
 	"sync"
 )
 
@@ -52,12 +54,22 @@ func (e *Engine) seedRelays() {
 		e.relays[id] = &Relay{
 			ID:         id,
 			IP:         fmt.Sprintf("1.2.3.%d", i),
-			Country:    countries[rand.Intn(len(countries))],
+			Country:    countries[mrand.Intn(len(countries))],
 			Role:       role,
 			Reputation: 1.0,
-			Load:       rand.Float64(),
+			Load:       mrand.Float64(),
 		}
 	}
+}
+
+func secureRandomInt(max int) int {
+	if max <= 0 {
+		return 0
+	}
+	var b [8]byte
+	_, _ = rand.Read(b[:])
+	val := binary.BigEndian.Uint64(b[:])
+	return int(val % uint64(max))
 }
 
 func (e *Engine) SelectRoute() []string {
@@ -85,11 +97,11 @@ func (e *Engine) SelectRoute() []string {
 		return nil
 	}
 
-	// Pick relays and increment load
-	e1 := entries[rand.Intn(len(entries))]
-	m1 := middles[rand.Intn(len(middles))]
-	m2 := middles[rand.Intn(len(middles))]
-	ex := exits[rand.Intn(len(exits))]
+	// Pick relays securely and increment load
+	e1 := entries[secureRandomInt(len(entries))]
+	m1 := middles[secureRandomInt(len(middles))]
+	m2 := middles[secureRandomInt(len(middles))]
+	ex := exits[secureRandomInt(len(exits))]
 
 	e1.Load += 0.01
 	m1.Load += 0.01
