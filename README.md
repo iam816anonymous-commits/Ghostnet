@@ -13,6 +13,12 @@ To run a network simulation:
 go run cmd/simulation/main.go -users 100 -duration 10 -mode MEDIUM
 ```
 
+### Basic Usage Example
+You can see a simple integration in `example.go`:
+```bash
+go run example.go
+```
+
 ### Running Tests
 ```bash
 go test ./...
